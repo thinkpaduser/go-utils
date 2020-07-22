@@ -18,7 +18,7 @@ func Collect(basePath string, m map[string][]string) error {
 	if _, err := ioutil.ReadDir(basePath); err != nil {
 		return err
 	}
-	_, err := traverse(&m, basePath)
+	err := traverse(&m, basePath)
 	if err != nil {
 		return err
 	}
@@ -26,11 +26,11 @@ func Collect(basePath string, m map[string][]string) error {
 }
 
 // Traverse file tree and append to the map
-func traverse(mapPtr *map[string][]string, path string) (bool, error) {
+func traverse(mapPtr *map[string][]string, path string) error {
 	files, err := ioutil.ReadDir(path)
 
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	for _, file := range files {
@@ -40,13 +40,10 @@ func traverse(mapPtr *map[string][]string, path string) (bool, error) {
 				(*mapPtr)[path] = append((*mapPtr)[path], file.Name())
 			} else {
                 // File type is directory so let's call traverse recursively
-				ok, _ := traverse(mapPtr,
+				_ = traverse(mapPtr,
 					fmt.Sprintf("%s/%s", path, file.Name()))
-				if !ok {
-					break
-				}
 			}
 		}
 	}
-	return true, nil
+	return nil
 }
