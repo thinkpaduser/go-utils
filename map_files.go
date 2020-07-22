@@ -18,8 +18,8 @@ func Collect(basePath string, m map[string][]string) error {
 	if _, err := ioutil.ReadDir(basePath); err != nil {
 		return err
 	}
-	ok, err := traverse(&m, basePath)
-	if !ok || err != nil {
+	_, err := traverse(&m, basePath)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -34,12 +34,12 @@ func traverse(mapPtr *map[string][]string, path string) (bool, error) {
 	}
 
 	for _, file := range files {
-    // I don't want any dotfiles
+        // I don't want any dotfiles
 		if !strings.HasPrefix(file.Name(), ".") {
 			if !file.IsDir() {
 				(*mapPtr)[path] = append((*mapPtr)[path], file.Name())
 			} else {
-        // File type is directory so let's call traverse recursively
+                // File type is directory so let's call traverse recursively
 				ok, _ := traverse(mapPtr,
 					fmt.Sprintf("%s/%s", path, file.Name()))
 				if !ok {
